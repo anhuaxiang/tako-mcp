@@ -1,0 +1,10 @@
+[project]
+name = "tako-mcp"
+version = "0.1.0"
+description = "Tako MCP Server"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "mcp[cli]>=1.8.1",
+    "tako-sdk>=0.1.6",
+]
