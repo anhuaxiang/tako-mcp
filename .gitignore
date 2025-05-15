@@ -11,3 +11,6 @@ wheels/
 
 # IDE
 settings.json
+
+# Other
+.DS_Store
