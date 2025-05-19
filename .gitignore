@@ -8,9 +8,12 @@ wheels/
 
 # Virtual environments
 .venv
+.python-version
+pyvenv.cfg
 
 # IDE
 settings.json
 
 # Other
 .DS_Store
+CACHEDIR.TAG
