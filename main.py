@@ -1,7 +1,7 @@
 import logging
 import os
 import traceback
-from typing import Any
+from typing import Any, Optional
 
 from tako.client import TakoClient, KnowledgeSearchSourceIndex
 from tako.types.visualize.types import TakoDataFormatDataset
@@ -59,6 +59,79 @@ async def generate_search_tako_prompt(text: str) -> str:
     {text}
     </UserInputText>
     """
+
+
+@mcp.prompt()
+async def generate_visualization_prompt(text: str) -> str:
+    """Generate a prompt to generate a visualization for given user input text."""
+    return f"""You are an expert at tidying up datasets and add rich metadata to them to help with visualization.
+
+*** Task 1: Tidy the dataset ***
+
+You are to take the dataset and make it a "tidy dataset".
+
+There are three interrelated features that make a dataset tidy:
+
+1. Each variable is a column; each column is a variable.
+2. Each observation is row; each row is an observation.
+3. Each value is a cell; each cell is a single value.
+
+There are two common problems you find in data that are ingested that make them not tidy:
+
+1. A variable might be spread across multiple columns.
+2. An observation might be scattered across multiple rows.
+
+For 1., we need to “melt” the wide data, with multiple columns, into long data.
+For 2., we need to unstack or pivot the multiple rows into columns (ie go from long to wide.)
+
+Example 1 (needs melting):
+| country | 1999 | 2000 |
+| USA     | 100   | 200   |
+| Canada  | 10    | 20    |
+
+Becomes (after melting):
+| country | year | value |
+| USA     | 1999 | 100   |
+| USA     | 2000 | 200   |
+| Canada  | 1999 | 10    |
+| Canada  | 2000 | 20    |
+
+Example 2 (needs pivoting):
+| country | year | type | count
+| USA     | 2020 | cases  | 10
+| USA     | 2020 | population | 2000000
+| USA     | 2021 | cases  | 30
+| USA     | 2021 | population | 2050000
+| Canada  | 2020 | cases  | 40
+| Canada  | 2020 | population | 3000000
+| Canada  | 2021 | population | 3000000
+
+Becomes (after pivoting):
+| country | year  | cases | population
+| USA     | 2020  | 10    | 2000000
+| USA     | 2021  | 30    | 2050000
+| Canada  | 2020  | 40    | 3000000
+| Canada  | 2021  | NULL  | 3000000
+
+You are to take the dataset and make it tidy.
+
+*** Task 2: Enrich the dataset with metadata ***
+
+You are to take the dataset and add rich metadata to it to help with visualization. 
+For variables that are appropriate for timeseries visualizations, you are to add specific
+metadata. 
+
+For variables that are appropriate for categorical bar chart visualizations, you are to add specific
+metadata.
+
+See the schema {TakoDataFormatDataset.model_json_schema()} for more information.
+
+Make the metadata consistent, rich, and useful for visualizations.
+
+<UserInputText>
+{text}
+</UserInputText>
+"""
 
 
 @mcp.tool()
