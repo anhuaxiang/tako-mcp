@@ -242,9 +242,12 @@ Make the metadata consistent, rich, and useful for visualizations.
 </UserInputText>
 """
 
-
-if __name__ == "__main__":
+def main():
     if ENVIRONMENT == "remote":
         mcp.run(transport="streamable-http")
     else:
         mcp.run(transport="stdio")
+
+
+if __name__ == "__main__":
+    main()
